@@ -14,23 +14,23 @@ the classes are always the original object.
 The module `PartitionMain` tests each with the same equivalence
 relations.
 
-# `Partition0.ml`
+## `Partition0.ml`
 
 This is a naive, persistent implementation of Union/Find featuring an
 asymptotic worst case cost of O(n^2).
 
-# `Partition1.ml`
+## `Partition1.ml`
 
 This is a persistent implementation of Union/Find with height-balanced
 forests and without path compression, featuring an asymptotic worst
 case cost of O(n*log(n)).
 
-# `Partition2.ml`
+## `Partition2.ml`
 
 This is an alternate version of `Partition1.ml`, using a different
 data type.
 
-# `Partition3.ml`
+## `Partition3.ml`
 
 This is a destructive implementation of Union/Find with
 height-balanced forests but without path compression, featuring an
