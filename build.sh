@@ -1,6 +1,5 @@
 #!/bin/sh
 set -x
-ocamlfind ocamlc -strict-sequence -w +A-48-4 -c Item.mli
 ocamlfind ocamlc -strict-sequence -w +A-48-4 -c Partition.mli
 ocamlfind ocamlopt -strict-sequence -w +A-48-4 -c Partition0.ml
 ocamlfind ocamlopt -strict-sequence -w +A-48-4 -c Partition2.ml

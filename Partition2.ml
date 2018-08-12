@@ -1,7 +1,7 @@
 (** Persistent implementation of the Union/Find algorithm with
     height-balanced forests and without path compression. *)
 
-module Make (Item: Item.S) =
+module Make (Item: Partition.Item) =
   struct
 
     type item = Item.t

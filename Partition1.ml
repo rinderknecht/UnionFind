@@ -6,7 +6,7 @@
    height of [i] (_not_ [j]).
 *)
 
-module Make (Item: Item.S) =
+module Make (Item: Partition.Item) =
   struct
 
     type item = Item.t

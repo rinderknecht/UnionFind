@@ -1,11 +1,11 @@
 (** This module offers the abstract data type of a partition of
     classes of equivalent items (Union & Find). *)
 
-(** The items are of type [PrintOrdType.t], that is, they have to obey
+(** The items are of type [Item.t], that is, they have to obey
     a total order, but also they must be printable to ease
-    debugging. The signature [PrintOrdType] is the input signature of
+    debugging. The signature [Item] is the input signature of
     the functor {!Partition.Make}. *)
-module type PrintOrdType =
+module type Item =
   sig
     (** Type of items *)
     type t
@@ -61,4 +61,4 @@ module type S =
     val is_equiv : item -> item -> partition -> bool
   end
 
-module Make (Ord : PrintOrdType) : S with type item = Ord.t
+module Make (Ord : Item) : S with type item = Ord.t

@@ -1,6 +1,6 @@
 (* Naive persistent implementation of Union/Find: O(n^2) worst case *)
 
-module Make (Item: Item.S) =
+module Make (Item: Partition.Item) =
   struct
 
     type item = Item.t

@@ -1,7 +1,7 @@
 (* Destructive implementation of union/find with height-balanced
    forests but without path compression: O(n*log(n)). *)
 
-module Make (Item: Item.S) =
+module Make (Item: Partition.Item) =
   struct
 
     type item = Item.t
