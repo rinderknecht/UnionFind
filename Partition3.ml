@@ -47,7 +47,7 @@ module Make (Item: Partition.Item) =
    let get_or_set item (p: partition) =
      try seek item p, p with
        Not_found -> let rec loop = {item; height=0; parent=loop}
-                   in loop, ItemMap.add item loop p
+                    in loop, ItemMap.add item loop p
 
    let link src dst = src.parent <- dst
 
