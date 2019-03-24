@@ -41,8 +41,8 @@ module Make (Item: Partition.Item) =
 
    let repr item partition = (seek item partition).item
 
-    let is_equiv (i: item) (j: item) (p: partition) =
-      equal (repr i p) (repr j p)
+   let is_equiv (i: item) (j: item) (p: partition) =
+     equal (repr i p) (repr j p)
 
    let get_or_set item (p: partition) =
      try seek item p, p with

@@ -8,7 +8,7 @@ symmetric: `alias x y` means that `x` is an alias of `y`, which
 translates in the present context as `x` not being the representative
 of the equivalence class containing the equivalence between `x` and
 `y`. The function `alias` is useful when managing aliases during the
-static analyses of programmning languages, so the representatives of
+static analyses of programming languages, so the representatives of
 the classes are always the original object.
 
 The module `PartitionMain` tests each with the same equivalence
@@ -37,4 +37,3 @@ height-balanced forests but without path compression, featuring an
 asymptotic worst case of O(n*log(n)). In practice, though, this
 implementation should be faster than the previous ones, due to a
 smaller multiplicative constant term.
-
