@@ -5,7 +5,6 @@ module Make (Item: Partition.Item) =
   struct
 
     type item = Item.t
-    type repr = item   (** Class representatives *)
 
     let equal i j = Item.compare i j = 0
 
@@ -28,59 +27,68 @@ module Make (Item: Partition.Item) =
 
     let empty = ItemMap.empty
 
-    (** The function [repr] is faster than a persistent implementation
-        in the worst case because, in the latter case, the cost is O(log n)
-        for accessing each node in the path to the root, whereas, in the
-        former, only the access to the first node in the path incurs a cost
-        of O(log n) -- the other nodes are accessed in constant time by
-        following the [next] field of type [node]. *)
-   let seek (i: item) (p: partition) : node =
-     let rec find_root node =
-       if node.parent == node then node else find_root node.parent
-     in find_root (ItemMap.find i p)
+    (** The impure function [repr] is faster than a pure
+        implementation in the worst case because, in the latter case,
+        the cost is O(log n) for accessing each node in the path to
+        the root, whereas, in the former, only the access to the first
+        node in the path incurs a cost of O(log n) -- the other nodes
+        are accessed in constant time by following the [next] field of
+        type [node]. *)
+    let seek (i: item) (p: partition) : node =
+      let rec find_root node =
+        if node.parent == node then node else find_root node.parent
+      in find_root (ItemMap.find i p)
 
-   let repr item partition = (seek item partition).item
+    let repr item partition = (seek item partition).item
 
-   let is_equiv (i: item) (j: item) (p: partition) =
-     equal (repr i p) (repr j p)
+    let is_equiv (i: item) (j: item) (p: partition) : bool =
+      try equal (repr i p) (repr j p) with
+        Not_found -> false
 
-   let get_or_set item (p: partition) =
-     try seek item p, p with
-       Not_found -> let rec loop = {item; height=0; parent=loop}
-                    in loop, ItemMap.add item loop p
+    let repr item partition =
+      try Some (repr item partition) with Not_found -> None
 
-   let link src dst = src.parent <- dst
+    let get_or_set item (p: partition) =
+      try seek item p, p with
+        Not_found ->
+          let rec loop = {item; height=0; parent=loop}
+          in loop, ItemMap.add item loop p
 
-   let equiv (i: item) (j: item) (p: partition) : partition =
-     let ni,p  = get_or_set i p in
-     let nj,p  = get_or_set j p in
-     let hi,hj = ni.height, nj.height in
-     let () =
-       if   not (equal ni.item nj.item)
-       then if   hi > hj
-            then link nj ni
-            else (link ni nj; nj.height <- max hj (hi+1))
-     in p
+    let link src dst = src.parent <- dst
 
-   let alias (i: item) (j: item) (p: partition) : partition =
-     let ni,p  = get_or_set i p in
-     let nj,p  = get_or_set j p in
-     let hi,hj = ni.height, nj.height in
-     let () =
-      if   not (equal ni.item nj.item)
-      then if   hi = hj || equal ni.item i
-           then (link ni nj; nj.height <- max hj (hi+1))
-           else if hi < hj then link ni nj
-                           else link nj ni
-     in p
+    let equiv (i: item) (j: item) (p: partition) : partition =
+      let ni,p  = get_or_set i p in
+      let nj,p  = get_or_set j p in
+      let hi,hj = ni.height, nj.height in
+      let () =
+        if   not (equal ni.item nj.item)
+        then if   hi > hj
+             then link nj ni
+             else (link ni nj; nj.height <- max hj (hi+1))
+      in p
 
-   (* Printing *)
+    let alias (i: item) (j: item) (p: partition) : partition =
+      let ni,p  = get_or_set i p in
+      let nj,p  = get_or_set j p in
+      let hi,hj = ni.height, nj.height in
+      let () =
+        if   not (equal ni.item nj.item)
+        then if   hi = hj || equal ni.item i
+             then (link ni nj; nj.height <- max hj (hi+1))
+             else if hi < hj then link ni nj
+                             else link nj ni
+      in p
 
-    let print p =
+    (* Printing *)
+
+    let print (p: partition) =
+      let buffer = Buffer.create 80 in
       let print _ node =
-        Printf.printf "%s,%d -> %s,%d\n"
-          (Item.to_string node.item) node.height
-          (Item.to_string node.parent.item) node.parent.height
-      in ItemMap.iter print p
+        let link =
+          Printf.sprintf "%s,%d -> %s,%d\n"
+            (Item.to_string node.item) node.height
+            (Item.to_string node.parent.item) node.parent.height
+        in Buffer.add_string buffer link
+      in ItemMap.iter print p; buffer
 
   end

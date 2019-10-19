@@ -10,7 +10,6 @@ module Make (Item: Partition.Item) =
   struct
 
     type item = Item.t
-    type repr = item   (** Class representatives *)
 
     let equal i j = Item.compare i j = 0
 
@@ -23,14 +22,18 @@ module Make (Item: Partition.Item) =
 
     let empty = ItemMap.empty
 
-    let rec seek (i: item) (p: partition) : repr * height =
+    let rec seek (i: item) (p: partition) : item * height =
       let j, _ as i' = ItemMap.find i p in
       if equal i j then i' else seek j p
 
     let repr item partition = fst (seek item partition)
 
-    let is_equiv (i: item) (j: item) (p: partition) =
-      equal (repr i p) (repr j p)
+    let is_equiv (i: item) (j: item) (p: partition) : bool =
+      try equal (repr i p) (repr j p) with
+        Not_found -> false
+
+    let repr item partition =
+      try Some (repr item partition) with Not_found -> None
 
     let get_or_set (i: item) (p: partition) =
       try seek i p, p with
@@ -60,10 +63,13 @@ module Make (Item: Partition.Item) =
     (* Printing *)
 
     let print (p: partition) =
+      let buffer = Buffer.create 80 in
       let print i (j,hi) =
         let _,hj = ItemMap.find j p in
-        Printf.printf "%s,%d -> %s,%d\n"
-          (Item.to_string i) hi (Item.to_string j) hj
-      in ItemMap.iter print p
+        let link =
+          Printf.sprintf "%s,%d -> %s,%d\n"
+                         (Item.to_string i) hi (Item.to_string j) hj
+        in Buffer.add_string buffer link
+      in ItemMap.iter print p; buffer
 
   end
