@@ -1,5 +1,5 @@
 (* Persistent implementation of Union/Find with height-balanced
-   forests and without path compression: O(n*log(n)).
+   forests and no path compression: O(n*log(n)).
 
    In the definition of type [t], the height component is that of the
    source, that is, if [ItemMap.find i m = (j,h)], then [h] is the
@@ -26,18 +26,18 @@ module Make (Item: Partition.Item) =
       let j, _ as i' = ItemMap.find i p in
       if equal i j then i' else seek j p
 
-    let repr item partition = fst (seek item partition)
+    let repr i p = fst (seek i p)
 
     let is_equiv (i: item) (j: item) (p: partition) : bool =
-      try equal (repr i p) (repr j p) with
-        Not_found -> false
-
-    let repr item partition =
-      try Some (repr item partition) with Not_found -> None
+      try equal (repr i p) (repr j p) with Not_found -> false
 
     let get_or_set (i: item) (p: partition) =
       try seek i p, p with
-        Not_found -> let i' = i,0 in (i', ItemMap.add i i' p)
+        Not_found -> let i' = i,0 in i', ItemMap.add i i' p
+
+    let mem i p = try Some (repr i p) with Not_found -> None
+
+    let repr i p = try repr i p with Not_found -> i
 
     let equiv (i: item) (j: item) (p: partition) : partition =
       let (ri,hi), p = get_or_set i p in

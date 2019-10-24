@@ -14,7 +14,11 @@ module Make (Item: Partition.Item) =
         upwardly and otherwise is a link to another node. Those trees
         are height-balanced. The type [node] implements nodes in those
         trees. *)
-    type node = {item: item; mutable height: int; mutable parent: node}
+    type node = {
+                item : item;
+      mutable height : int;
+      mutable parent : node
+    }
 
     module ItemMap = Map.Make (Item)
 
@@ -39,20 +43,21 @@ module Make (Item: Partition.Item) =
         if node.parent == node then node else find_root node.parent
       in find_root (ItemMap.find i p)
 
-    let repr item partition = (seek item partition).item
+    let repr i p = (seek i p).item
 
     let is_equiv (i: item) (j: item) (p: partition) : bool =
       try equal (repr i p) (repr j p) with
         Not_found -> false
-
-    let repr item partition =
-      try Some (repr item partition) with Not_found -> None
 
     let get_or_set item (p: partition) =
       try seek item p, p with
         Not_found ->
           let rec loop = {item; height=0; parent=loop}
           in loop, ItemMap.add item loop p
+
+    let mem i p = try Some (repr i p) with Not_found -> None
+
+    let repr i p = try repr i p with Not_found -> i
 
     let link src dst = src.parent <- dst
 

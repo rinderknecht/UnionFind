@@ -1,5 +1,5 @@
 (** Persistent implementation of the Union/Find algorithm with
-    height-balanced forests and without path compression. *)
+    height-balanced forests and no path compression. *)
 
 module Make (Item: Partition.Item) =
   struct
@@ -59,18 +59,19 @@ module Make (Item: Partition.Item) =
            Root hi -> i,hi
       | Link (j,_) -> seek j p
 
-    let repr item partition = fst (seek item partition)
+    let repr i p = fst (seek i p)
 
     let is_equiv (i: item) (j: item) (p: partition) : bool =
       try equal (repr i p) (repr j p) with
         Not_found -> false
 
-    let repr item partition =
-      try Some (repr item partition) with Not_found -> None
-
     let get_or_set (i: item) (p: partition) =
       try seek i p, p with
         Not_found -> let n = i,0 in (n, root n p)
+
+    let mem i p = try Some (repr i p) with Not_found -> None
+
+    let repr i p = try repr i p with Not_found -> i
 
     let equiv (i: item) (j: item) (p: partition) : partition =
       let (ri,hi as ni), p = get_or_set i p in

@@ -2,14 +2,11 @@
 
 module Make (Item: Partition.Item) =
   struct
-
     type item = Item.t
 
     let equal i j = Item.compare i j = 0
 
     module ItemMap = Map.Make (Item)
-
-    type height = int
 
     type partition = item ItemMap.t
     type t = partition
@@ -23,14 +20,14 @@ module Make (Item: Partition.Item) =
       else repr parent partition
 
     let is_equiv (i: item) (j: item) (p: partition) : bool =
-      try equal (repr i p) (repr j p) with
-        Not_found -> false
+      try equal (repr i p) (repr j p) with Not_found -> false
 
     let get_or_set (i: item) (p: partition) : item * partition =
       try repr i p, p with Not_found -> i, ItemMap.add i i p
 
-    let repr item partition =
-      try Some (repr item partition) with Not_found -> None
+    let mem i p = try Some (repr i p) with Not_found -> None
+
+    let repr i p = try repr i p with Not_found -> i
 
     let equiv (i: item) (j: item) (p: partition) : partition =
       let ri, p = get_or_set i p in
@@ -48,6 +45,5 @@ module Make (Item: Partition.Item) =
           Printf.sprintf "%s -> %s\n"
                          (Item.to_string src) (Item.to_string dst)
         in Buffer.add_string buffer link
-      in ItemMap.iter print p; buffer
-
+      in (ItemMap.iter print p; buffer)
   end
