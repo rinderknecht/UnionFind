@@ -33,7 +33,7 @@ module Make (Item: Partition.Item) =
 
     let get_or_set (i: item) (p: partition) =
       try seek i p, p with
-        Not_found -> let i' = i,0 in i', ItemMap.add i i' p
+        Not_found -> let i' = (i,0) in (i', ItemMap.add i i' p)
 
     let mem i p = try Some (repr i p) with Not_found -> None
 
