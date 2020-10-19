@@ -1,7 +1,7 @@
 module Int =
   struct
     type t = int
-    let compare (i: int) (j: int) = Pervasives.compare i j
+    let compare (i: int) (j: int) = Stdlib.compare i j
     let to_string = string_of_int
   end
 
