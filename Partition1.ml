@@ -3,8 +3,7 @@
 
    In the definition of type [t], the height component is that of the
    source, that is, if [ItemMap.find i m = (j,h)], then [h] is the
-   height of [i] (_not_ [j]).
-*)
+   height of [i] (_not_ [j]). *)
 
 module Make (Item: Partition.Item) =
   struct
