@@ -1,3 +1,5 @@
+open UnionFind
+
 module Int =
   struct
     type t = int
